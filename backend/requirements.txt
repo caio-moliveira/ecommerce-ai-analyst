@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+psycopg2
+celery
+redis
+pandas
+crew_ai
+crew_ai_tools
+email-validator
