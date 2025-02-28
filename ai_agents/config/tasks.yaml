@@ -1,0 +1,17 @@
+fetch_sales_data:
+  description: >
+    Retrieve the latest sales data from the PostgreSQL database to answer customer queries.
+  expected_output: >
+    JSON response containing total sales, best-selling products, and customer trends.
+  
+generate_insights:
+  description: >
+    Analyze the sales and customer data to generate insights on trends, seasonality, and revenue.
+  expected_output: >
+    A summary of key business trends and insights for the requested period.
+
+generate_report:
+  description: >
+    Generate a structured sales report (daily, weekly, monthly, quarterly, annually).
+  expected_output: >
+    A well-formatted PDF/Markdown report containing charts and insights, emailed to the client.

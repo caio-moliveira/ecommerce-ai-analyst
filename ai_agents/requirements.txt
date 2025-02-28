@@ -1,0 +1,9 @@
+crewai
+crewai_tools
+psycopg2
+openai
+langchain
+pandas
+numpy
+matplotlib
+email-validator
