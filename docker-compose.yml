@@ -1,5 +1,4 @@
 services:
-  # ✅ PostgreSQL Database
   db:
     image: postgres:latest
     restart: always
@@ -12,66 +11,33 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
-  
-  # ✅ Redis (Message Broker for Celery)
-  redis:
-    image: redis:latest
-    restart: always
-    ports:
-      - "6379:6379"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
 
-  # ✅ Backend API (FastAPI + CrewAI)
   backend:
-    build: ./backend
-    restart: always
+    build: 
+      context: .
+      dockerfile: backend/Dockerfile
     depends_on:
       - db
-      - redis
     env_file:
       - .env
     environment:
-      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_HOST: db
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      REDIS_URL: redis://redis:6379/0
     ports:
       - "8000:8000"
-    command: uvicorn backend.api.main:app --host 0.0.0.0 --port 8000 --reload
 
-  # ✅ Celery Worker (Handles AI Analysis Tasks)
-  celery_worker:
-    build: ./backend
-    restart: always
-    depends_on:
-      - backend
-      - redis
-    env_file:
-      - .env
-    environment:
-      REDIS_URL: redis://redis:6379/0
-    command: celery -A backend.scheduler worker --loglevel=info
-
-  # ✅ Celery Beat (Schedules AI Reports)
-  celery_beat:
-    build: ./backend
-    restart: always
-    depends_on:
-      - backend
-      - redis
-    env_file:
-      - .env
-    environment:
-      REDIS_URL: redis://redis:6379/0
-    command: celery -A backend.scheduler beat --loglevel=info
-
-  # ✅ Streamlit Frontend
   frontend:
-    build: ./frontend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
     depends_on:
       - backend
     ports:
       - "8501:8501"
 
 volumes:
-  postgres_data:
+  pg_data:

@@ -1,5 +1,5 @@
 crewai
-crewai_tools
+crewai.tools
 psycopg2
 openai
 langchain
@@ -7,3 +7,5 @@ pandas
 numpy
 matplotlib
 email-validator
+requests
+litellm

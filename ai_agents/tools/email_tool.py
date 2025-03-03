@@ -1,6 +1,6 @@
 import smtplib
 from email.message import EmailMessage
-from crewai_tools import tool
+from crewai.tools import tool
 import os
 
 EMAIL_USER = os.getenv("EMAIL_USER")

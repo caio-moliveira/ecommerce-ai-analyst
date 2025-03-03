@@ -2,10 +2,9 @@ fastapi
 uvicorn
 sqlalchemy
 pydantic
-psycopg2
-celery
-redis
+psycopg2-binary
 pandas
-crew_ai
-crew_ai_tools
+crewai
+crewai.tools
 email-validator
+asyncpg  
