@@ -14,7 +14,9 @@ DB_PASS = os.getenv("POSTGRES_PASSWORD")
 
 
 # Create a connection string
-SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+)
 
 # Criar o motor assíncrono
 async_engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=False)

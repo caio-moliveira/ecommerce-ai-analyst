@@ -1,4 +1,4 @@
-fetch_sales_data:
+sales_data:
   description: >
     Retrieve the latest sales data from the PostgreSQL database to answer customer queries.
   expected_output: >

@@ -1,47 +1,58 @@
-from crewai import Agent, Task, Crew, Process
-from crewai.project import agent, task, crew, CrewBase
-from crewai_tools import SerperDevTool
+from crewai import Agent, Task, Crew, Process, LLM
+from crewai.project import agent, task, CrewBase, crew
+from ai_agents.tools.database_tool import fetch_sales_data
+
+
+# Load YAML configurations
+agents_config = "config/agents.yaml"
+tasks_config = "config/tasks.yaml"
+
+
+llm = LLM(model="ollama/deepseek-r1:8b", base_url="http://localhost:11434")
 
 
 @CrewBase
 class CrewAI:
-    """Main class to define CrewAI agents, tasks, and execution process."""
+    """Defines AI agents and tasks for data analysis."""
 
-    # Load agents and tasks from YAML
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    def __init__(self):
+        self.analysis = None
+
+    def set_analysis(self, analysis):
+        self.analysis = analysis
+        return self
 
     @agent
     def data_agent(self) -> Agent:
-        """Defines the E-commerce Data Assistant agent."""
+        """E-commerce Data Assistant agent."""
         return Agent(
+            llm=llm,
             config=self.agents_config["data_assistant"],
-            tools=[SerperDevTool()],
+            tools=[fetch_sales_data],
             verbose=True,
-            memory=False,
         )
 
     @agent
     def bi_agent(self) -> Agent:
-        """Defines the Business Intelligence Analyst agent."""
+        """Business Intelligence Analyst agent."""
         return Agent(
+            llm=llm,
             config=self.agents_config["bi_analyst"],
-            tools=[SerperDevTool()],
+            tools=[fetch_sales_data],
             verbose=True,
-            memory=False,
         )
 
     @task
     def fetch_sales_task(self) -> Task:
-        """Defines the task to fetch sales data from PostgreSQL."""
+        """Task to fetch sales data from PostgreSQL."""
         return Task(
-            config=self.tasks_config["fetch_sales_data"],
+            config=self.tasks_config["sales_data"],
             agent=self.data_agent(),
         )
 
     @task
     def insights_task(self) -> Task:
-        """Defines the task to analyze business insights."""
+        """Task to analyze business insights."""
         return Task(
             config=self.tasks_config["generate_insights"],
             agent=self.bi_agent(),
@@ -49,18 +60,19 @@ class CrewAI:
 
     @task
     def report_task(self) -> Task:
-        """Defines the task to generate automated reports."""
+        """Task to analyze business insights."""
         return Task(
             config=self.tasks_config["generate_report"],
-            agent=self.data_agent(),
+            agent=self.bi_agent(),
+            depends_on=[self.insights_task()],
         )
 
     @crew
     def crew(self) -> Crew:
-        """Defines the CrewAI execution process."""
+        """Runs the CrewAI execution process."""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
-            processes=Process.sequential,
+            process=Process.sequential,
             verbose=True,
         )
