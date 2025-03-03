@@ -1,9 +1,8 @@
 from fastapi import FastAPI
-from backend.api.endpoints import router
+from backend.api.endpoints import router  # Ensure correct import
 
 app = FastAPI()
 
-# ✅ Register API Routes
 app.include_router(router)
 
 

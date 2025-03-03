@@ -8,7 +8,7 @@ agents_config = "config/agents.yaml"
 tasks_config = "config/tasks.yaml"
 
 
-llm = LLM(model="ollama/deepseek-r1:8b", base_url="http://localhost:11434")
+llm = LLM(model="ollama/deepseek-r1:8b", base_url="http://ollama:11434")
 
 
 @CrewBase
@@ -76,3 +76,10 @@ class CrewAI:
             process=Process.sequential,
             verbose=True,
         )
+
+    async def kickoff(self, inputs: dict):
+        """Executes the AI analysis workflow."""
+        try:
+            return await self.crew().kickoff(inputs)
+        except Exception as e:
+            return {"error": str(e)}

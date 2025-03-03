@@ -1,21 +1,21 @@
-# Use an official Python runtime as a parent image
+# Use official Python image
 FROM python:3.10
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy backend and AI agents
-COPY backend/ ./backend
-COPY ai_agents/ ./ai_agents
-
-# Set the Python path to include the app directory
-ENV PYTHONPATH=/app
+# Copy the backend folder and the ai_agents folder
+COPY backend /app/backend
+COPY ai_agents /app/ai_agents
 
 # Install dependencies
-RUN pip install --no-cache-dir -r backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+
+# Set the PYTHONPATH so FastAPI can find backend as a module
+ENV PYTHONPATH=/app
 
 # Expose FastAPI port
 EXPOSE 8000
 
-# Command to run FastAPI properly
+# Start FastAPI
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

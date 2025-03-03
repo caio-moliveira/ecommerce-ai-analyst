@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.db.database import get_db
-from backend.services.ai_analysis import analyze_sales_data
+from backend.services.ai_services import generate_ai_response
 from backend.services.report_generator import generate_report
 from pydantic import BaseModel
 
@@ -26,13 +26,20 @@ async def get_sales_data(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/analyze")
-async def analyze_data(request: AnalysisRequest):
-    """Runs AI analysis synchronously (no Celery)"""
-    try:
-        return await analyze_sales_data(request.question)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@router.post("/ask")
+async def ask_question(question: str):
+    """
+    Accepts a question from the user and generates an AI-driven response.
+    """
+    if not question:
+        raise HTTPException(status_code=400, detail="Question cannot be empty")
+
+    response = await generate_ai_response(question)
+
+    if "error" in response:
+        raise HTTPException(status_code=500, detail=response["error"])
+
+    return response
 
 
 @router.post("/generate_report/{period}")

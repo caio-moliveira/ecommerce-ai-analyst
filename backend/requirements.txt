@@ -5,6 +5,6 @@ pydantic
 psycopg2-binary
 pandas
 crewai
-crewai.tools
+crewai[tools]
 email-validator
 asyncpg  

@@ -1,5 +1,5 @@
 crewai
-crewai.tools
+crewai[tools]
 psycopg2
 openai
 langchain
