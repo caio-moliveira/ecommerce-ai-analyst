@@ -1,6 +1,7 @@
 from crewai import Agent, Task, Crew, Process, LLM
 from crewai.project import agent, task, CrewBase, crew
-from ai_agents.tools.database_tool import fetch_sales_data
+from backend.db.analyst_tool import query_database_with_ai
+from backend.db.bi_tool import generate_insights
 
 
 # Load YAML configurations
@@ -16,29 +17,26 @@ class CrewAI:
     """Defines AI agents and tasks for data analysis."""
 
     def __init__(self):
-        self.analysis = None
-
-    def set_analysis(self, analysis):
-        self.analysis = analysis
-        return self
+        self.agents_config = agents_config
+        self.tasks_config = tasks_config
 
     @agent
     def data_agent(self) -> Agent:
-        """E-commerce Data Assistant agent."""
+        """E-commerce Data Analyst Agent."""
         return Agent(
             llm=llm,
             config=self.agents_config["data_assistant"],
-            tools=[fetch_sales_data],
+            tools=[query_database_with_ai],
             verbose=True,
         )
 
     @agent
     def bi_agent(self) -> Agent:
-        """Business Intelligence Analyst agent."""
+        """Business Intelligence Analyst Agent."""
         return Agent(
             llm=llm,
             config=self.agents_config["bi_analyst"],
-            tools=[fetch_sales_data],
+            tools=[generate_insights],
             verbose=True,
         )
 
@@ -56,11 +54,14 @@ class CrewAI:
         return Task(
             config=self.tasks_config["generate_insights"],
             agent=self.bi_agent(),
+            depends_on=[
+                self.fetch_sales_task()
+            ],  # Ensure data is fetched before insights
         )
 
     @task
     def report_task(self) -> Task:
-        """Task to analyze business insights."""
+        """Task to generate a structured business report."""
         return Task(
             config=self.tasks_config["generate_report"],
             agent=self.bi_agent(),
@@ -71,8 +72,12 @@ class CrewAI:
     def crew(self) -> Crew:
         """Runs the CrewAI execution process."""
         return Crew(
-            agents=self.agents,
-            tasks=self.tasks,
+            agents=[self.data_agent(), self.bi_agent()],
+            tasks=[
+                self.fetch_sales_task(),
+                self.insights_task(),
+                self.report_task(),
+            ],  # Ensure tasks are defined
             process=Process.sequential,
             verbose=True,
         )

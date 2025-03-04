@@ -8,3 +8,10 @@ crewai
 crewai[tools]
 email-validator
 asyncpg  
+openai
+langchain
+numpy
+matplotlib
+email-validator
+requests
+litellm
