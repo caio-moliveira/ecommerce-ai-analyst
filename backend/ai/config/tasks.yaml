@@ -1,0 +1,103 @@
+sales_data:
+  description: >
+    Generate an optimized SQL query to retrieve the exact answer to the user's sales-related question.  
+    The AI must analyze the intent behind the query, dynamically generate the SQL statement,  
+    and execute it against the database.
+
+    Ensure:
+    - The query is dynamically generated and optimized for performance.
+    - The output **includes the SQL query and the result** from execution.
+    - No additional analysis or explanations should be included.
+
+  expected_output: >
+    A structured JSON response containing the SQL query used and the result:
+    ```json
+    {
+      "query": "<Generated SQL Query>",
+      "result": "<Query Execution Result>"
+    }
+    ```
+  agent: data_assistant
+  
+generate_insights:
+  description: >
+    Conduct an advanced **KPI-based** analysis of sales performance using retrieved data.  
+    The analysis should focus on key **business metrics** that help stakeholders  
+    **understand trends, risks, and opportunities** in sales performance.
+
+    **Key Performance Indicators (KPIs) to analyze:**
+    - **Total Revenue** (overall and by region)
+    - **Gross Profit Margin**
+    - **Customer Retention Rate** (repeat purchases vs new customers)
+    - **Average Order Value (AOV)**
+    - **Top-Selling Products** (based on revenue and units sold)
+    - **Underperforming Products** (high inventory, low sales)
+    - **Sales Trends** (monthly revenue growth, seasonal spikes)
+    - **Sales Channel Performance** (Online vs In-Store vs Wholesale)
+    - **Regional Sales Performance** (best and worst-performing regions)
+    - **Customer Behavior Trends** (high-value customers, churn risk)
+
+  expected_output: >
+    A structured JSON response containing KPI-based insights:
+    ```json
+    {
+      "total_revenue": "$XX,XXX",
+      "gross_profit_margin": "XX%",
+      "customer_retention_rate": "XX%",
+      "average_order_value": "$XXX",
+      "top_selling_products": ["Product A", "Product B"],
+      "underperforming_products": ["Product C", "Product D"],
+      "monthly_sales_trends": ["Up 10%", "Down 5%"],
+      "sales_channel_performance": {
+        "online": "XX%",
+        "in_store": "XX%",
+        "wholesale": "XX%"
+      },
+      "regional_performance": {
+        "best_region": "Region X",
+        "worst_region": "Region Y"
+      },
+      "customer_behavior": {
+        "high_value_customers": "XX%",
+        "churn_risk": "XX%"
+      }
+    }
+    ```
+  agent: bi_analyst
+
+generate_report:
+  description: >
+    Generate a **concise** business intelligence report using the KPI-based insights.  
+    The report should focus on **high-impact takeaways** for executives and stakeholders.
+
+    **Include:**
+    - A **brief executive summary** (3 key insights, no fluff).
+    - **Performance highlights** (top KPIs in a summarized format).
+    - **Strategic recommendations** based on insights.
+
+    **Exclude:**
+    - Unnecessary details or raw data.
+    - Any redundant information already retrieved in insights.
+
+  expected_output: >
+    A structured markdown business report:
+    ```markdown
+    # Business Intelligence Report
+
+    ## Executive Summary
+    - Sales increased by X% this quarter.
+    - Customer retention remains steady at X%.
+    - Product X is underperforming and needs review.
+
+    ## KPI Overview
+    - **Total Revenue:** $XX,XXX
+    - **Gross Profit Margin:** XX%
+    - **Best-Selling Product:** XYZ
+    - **Sales Growth:** +XX% MoM
+
+    ## Strategic Recommendations
+    - Expand marketing for Product X to increase sales.
+    - Optimize pricing strategy to improve profit margins.
+    - Focus on high-value customer retention strategies.
+    ```
+  agent: bi_analyst

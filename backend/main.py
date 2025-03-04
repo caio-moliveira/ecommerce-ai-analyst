@@ -1,8 +1,6 @@
 import uvicorn
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 from backend.api.routes import router as router
-from backend.db.database import get_db
 from backend.ai.crew import CrewAI
 
 # Initialize FastAPI
@@ -19,15 +17,6 @@ crew_ai = CrewAI()
 async def root():
     """Root endpoint to check API health."""
     return {"message": "Welcome to the AI-powered Sales Analytics API!"}
-
-
-@app.post("/ai/execute")
-async def execute_ai(inputs: dict, db: Session = Depends(get_db)):
-    """
-    Endpoint to trigger AI analysis.
-    The AI agents will process the inputs and return insights.
-    """
-    return await crew_ai.kickoff(inputs)
 
 
 if __name__ == "__main__":

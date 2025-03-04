@@ -1,32 +1,22 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from schemas import (
-    QuestionRequest,
-    AnswerResponse,
-    ReportRequest,
-    ReportResponse,
-)
-from services import process_user_question, generate_report
-from db.database import get_db
+from fastapi import APIRouter
+from backend.api.services import process_user_question, generate_report
 
-router = APIRouter(prefix="/ai", tags=["AI"])
+router = APIRouter()
 
 
-@router.post("/ask", response_model=AnswerResponse)
-async def ask_ai(request: QuestionRequest, db: Session = Depends(get_db)):
+@router.post("/ai/ask")
+def ask_question(question: str):
     """
-    Users ask the AI a question about sales data.
-    The AI (Data Analyst Agent) retrieves the answer from the database.
+    API endpoint to receive user questions and trigger AI execution.
     """
-    answer = process_user_question(request.question, db)
-    return {"question": request.question, "answer": answer}
+    response = process_user_question(question)
+    return response
 
 
-@router.post("/report", response_model=ReportResponse)
-async def get_report(request: ReportRequest, db: Session = Depends(get_db)):
+@router.post("/ai/report")
+def generate_ai_report():
     """
-    Users request a sales/business intelligence report.
-    The AI (BI Analyst Agent) analyzes sales trends & generates insights.
+    API endpoint to trigger AI report generation separately.
     """
-    report = generate_report(request.report_type, db)
-    return {"report_type": request.report_type, "report": report}
+    response = generate_report()
+    return response

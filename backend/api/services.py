@@ -1,45 +1,36 @@
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-from backend.db.analyst_tool import query_database_with_ai
-from backend.db.bi_tool import generate_insights
+from backend.ai.crew import CrewAI
 
 logger = logging.getLogger(__name__)
+crew_ai = CrewAI()
 
 
-async def process_user_question(question: str, db: AsyncSession) -> str:
+def process_user_question(question: str):
     """
-    Handles a user's question by dynamically querying the sales database.
-
-    - Calls `query_database_with_ai()` from analyst_tool.py.
-    - Returns a structured AI response.
-
-    :param question: User's question about sales data.
-    :param db: Async database session.
-    :return: AI-generated response with relevant data.
+    Handles user queries and executes AI analysis.
     """
     try:
-        logger.info(f"📊 Processing user question: {question}")
-        response = await query_database_with_ai(question)
-        return response
+        logger.info(f"🔍 Processing user question: {question}")
+        result = crew_ai.kickoff({"question": question})
+
+        if isinstance(result, dict) and "error" in result:
+            return {"error": "Failed to process request."}
+
+        return {"answer": result}
+
     except Exception as e:
-        logger.error(f"❌ Error processing question: {e}")
-        return "Error processing your request."
+        logger.error(f"❌ Error processing question: {e}", exc_info=True)
+        return {"error": "An internal server error occurred."}
 
 
-async def generate_report(db: AsyncSession) -> str:
+def generate_report():
     """
-    Generates a full business intelligence report using AI-driven insights.
-
-    - Calls `generate_insights()` from bi_tool.py.
-    - Returns structured data analysis.
-
-    :param db: Async database session.
-    :return: AI-generated structured report.
+    Triggers only the report generation task.
     """
     try:
-        logger.info("📈 Generating Business Intelligence Report...")
-        report = await generate_insights()
-        return report
+        logger.info("📊 Generating business report...")
+        result = crew_ai.kickoff({"generate_report": True})  # Run report task only
+        return {"report": result}
     except Exception as e:
-        logger.error(f"❌ Error generating BI report: {e}")
-        return "Error generating business insights."
+        logger.error(f"❌ Report generation failed: {e}", exc_info=True)
+        return {"error": "Failed to generate report."}
