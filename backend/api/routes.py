@@ -14,9 +14,9 @@ def ask_question(question: str):
 
 
 @router.post("/ai/report")
-def generate_ai_report():
+def generate_ai_report(period: str):
     """
     API endpoint to trigger AI report generation separately.
     """
-    response = generate_report()
+    response = generate_report(period)
     return response

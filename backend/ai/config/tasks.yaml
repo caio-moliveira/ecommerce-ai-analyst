@@ -1,103 +1,45 @@
 sales_data:
   description: >
-    Generate an optimized SQL query to retrieve the exact answer to the user's sales-related question.  
-    The AI must analyze the intent behind the query, dynamically generate the SQL statement,  
-    and execute it against the database.
-
-    Ensure:
-    - The query is dynamically generated and optimized for performance.
-    - The output **includes the SQL query and the result** from execution.
-    - No additional analysis or explanations should be included.
-
+    Retrieve and analyze sales data to answer the user's question: {question}.  
+    You must generate an optimized SQL query to extract the necessary information from the database based on the question: {question}.  
+    Execute the query and provide a structured response.
   expected_output: >
-    A structured JSON response containing the SQL query used and the result:
-    ```json
-    {
-      "query": "<Generated SQL Query>",
-      "result": "<Query Execution Result>"
-    }
-    ```
+    Provide the executed SQL query and the retrieved results in a structured format based on the question: {question}
   agent: data_assistant
-  
+
 generate_insights:
   description: >
-    Conduct an advanced **KPI-based** analysis of sales performance using retrieved data.  
-    The analysis should focus on key **business metrics** that help stakeholders  
-    **understand trends, risks, and opportunities** in sales performance.
+    Conduct an advanced data analysis to uncover key business insights for the company at the period: {period}.  
+    Your analysis is not based on a specific question, but rather focuses on identifying trends, risks, and opportunities  
+    within the dataset .
+    Perform an advanced analysis of sales performance based on the retrieved data at the period: {period}.
+  expected_output: >
+    Focus on key business indicators that help stakeholders identify trends, risks, and opportunities based on the period: {period}
 
-    **Key Performance Indicators (KPIs) to analyze:**
-    - **Total Revenue** (overall and by region)
-    - **Gross Profit Margin**
-    - **Customer Retention Rate** (repeat purchases vs new customers)
-    - **Average Order Value (AOV)**
-    - **Top-Selling Products** (based on revenue and units sold)
-    - **Underperforming Products** (high inventory, low sales)
-    - **Sales Trends** (monthly revenue growth, seasonal spikes)
-    - **Sales Channel Performance** (Online vs In-Store vs Wholesale)
-    - **Regional Sales Performance** (best and worst-performing regions)
-    - **Customer Behavior Trends** (high-value customers, churn risk)
+    Period for analysis: {period}
+      - Total revenue, both overall and by region
+      - Gross profit margin
+      - Customer retention trends
+      - Average order value
+      - Best-selling products and their contribution to revenue
+      - Underperforming products with low sales volume
+      - Monthly and seasonal sales trends
+      - Sales performance across different channels
+      - Regional differences in sales performance
+      - Customer behavior, including high-value customers and potential churn risks
 
   expected_output: >
-    A structured JSON response containing KPI-based insights:
-    ```json
-    {
-      "total_revenue": "$XX,XXX",
-      "gross_profit_margin": "XX%",
-      "customer_retention_rate": "XX%",
-      "average_order_value": "$XXX",
-      "top_selling_products": ["Product A", "Product B"],
-      "underperforming_products": ["Product C", "Product D"],
-      "monthly_sales_trends": ["Up 10%", "Down 5%"],
-      "sales_channel_performance": {
-        "online": "XX%",
-        "in_store": "XX%",
-        "wholesale": "XX%"
-      },
-      "regional_performance": {
-        "best_region": "Region X",
-        "worst_region": "Region Y"
-      },
-      "customer_behavior": {
-        "high_value_customers": "XX%",
-        "churn_risk": "XX%"
-      }
-    }
-    ```
+    Provide a structured, breakdown of insights, text-based summary of key sales insights at the period: {period}
   agent: bi_analyst
 
 generate_report:
   description: >
-    Generate a **concise** business intelligence report using the KPI-based insights.  
-    The report should focus on **high-impact takeaways** for executives and stakeholders.
-
-    **Include:**
-    - A **brief executive summary** (3 key insights, no fluff).
-    - **Performance highlights** (top KPIs in a summarized format).
-    - **Strategic recommendations** based on insights.
-
-    **Exclude:**
-    - Unnecessary details or raw data.
-    - Any redundant information already retrieved in insights.
-
+    Create a well-structured and executive-friendly business intelligence report at the period: {period}.  
+    This report summarizes the key trends, risks, and opportunities identified in the dataset at the period: {period}.  
+    The insights should be presented in a clear and actionable format.
+    The report should be easy to understand and focus on essential takeaways.
   expected_output: >
-    A structured markdown business report:
-    ```markdown
-    # Business Intelligence Report
-
-    ## Executive Summary
-    - Sales increased by X% this quarter.
-    - Customer retention remains steady at X%.
-    - Product X is underperforming and needs review.
-
-    ## KPI Overview
-    - **Total Revenue:** $XX,XXX
-    - **Gross Profit Margin:** XX%
-    - **Best-Selling Product:** XYZ
-    - **Sales Growth:** +XX% MoM
-
-    ## Strategic Recommendations
-    - Expand marketing for Product X to increase sales.
-    - Optimize pricing strategy to improve profit margins.
-    - Focus on high-value customer retention strategies.
-    ```
+    Write a well-structured business report summarizing the key findings and insights from the analysis at the period: {period}  
   agent: bi_analyst
+
+

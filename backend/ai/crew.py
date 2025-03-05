@@ -1,10 +1,29 @@
 from crewai import Agent, Task, Crew, Process, LLM
 from crewai.project import agent, task, CrewBase, crew
 import logging
-from backend.db.database import query_database_with_ai
+from crewai_tools import PGSearchTool, NL2SQLTool
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+# Obter as variáveis do arquivo .env
+DB_HOST = os.getenv("POSTGRES_HOST")
+DB_NAME = os.getenv("POSTGRES_DB")
+DB_USER = os.getenv("POSTGRES_USER")
+DB_PASS = os.getenv("POSTGRES_PASSWORD")
+DB_PORT = os.getenv("POSTGRES_PORT")
 
 
 llm = LLM(model="ollama/deepseek-r1:8b", base_url="http://localhost:11434")
+
+db_uri = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+
+pgs_search_tool = PGSearchTool(db_uri=db_uri, table_name="public.sales")
+
+nl2sql = NL2SQLTool(db_uri=db_uri)
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +41,7 @@ class CrewAI:
         return Agent(
             llm=llm,
             config=self.agents_config["data_assistant"],
-            tools=[query_database_with_ai],
+            tools=[pgs_search_tool, nl2sql],
             verbose=True,
         )
 
@@ -32,6 +51,7 @@ class CrewAI:
         return Agent(
             llm=llm,
             config=self.agents_config["bi_analyst"],
+            tools=[pgs_search_tool, nl2sql],
             verbose=True,
         )
 
@@ -56,28 +76,27 @@ class CrewAI:
             config=self.tasks_config["generate_report"],
         )
 
-    @crew
-    def crew(self) -> Crew:
-        """Runs the CrewAI execution process."""
-        return Crew(
-            agents=self.agents,
-            tasks=self.tasks,
-            process=Process.sequential,
-            verbose=True,
-        )
-
-    def kickoff(self, question: str):
-        """
-        Executes the CrewAI workflow with the given question.
-        """
+    def run_data_assistant(self, question: str):
+        """Executes only the data assistant agent."""
         try:
-            logger.info(f"🚀 Running CrewAI with question: {question}")
-
-            # ✅ Ensure inputs is a dictionary
-            result = self.crew().kickoff({"question": question})
-
-            logger.info(f"✅ CrewAI Result: {result}")
+            logger.info(f"🟢 Running Data Assistant for question: {question}")
+            crew = Crew(agents=[self.data_assistant()], tasks=[self.sales_data()])
+            result = crew.kickoff({"question": question})
             return result
         except Exception as e:
-            logger.error(f"❌ CrewAI Execution Failed: {e}", exc_info=True)
+            logger.error(f"❌ Data Assistant Execution Failed: {e}", exc_info=True)
+            return {"error": str(e)}
+
+    def run_bi_analyst(self, period: str):
+        """Executes only the BI Analyst agent for insights & reports."""
+        try:
+            logger.info(f"🟢 Running BI Analyst for period: {period}")
+            crew = Crew(
+                agents=[self.bi_analyst()],
+                tasks=[self.generate_insights(), self.generate_report()],
+            )
+            result = crew.kickoff({"period": period})
+            return result
+        except Exception as e:
+            logger.error(f"❌ BI Analyst Execution Failed: {e}", exc_info=True)
             return {"error": str(e)}

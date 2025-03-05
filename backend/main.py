@@ -1,16 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 from backend.api.routes import router as router
-from backend.ai.crew import CrewAI
 
 # Initialize FastAPI
 app = FastAPI(title="AI-Powered Sales Analytics API", version="1.0")
 
 # Register API routes
 app.include_router(router)
-
-# Initialize CrewAI
-crew_ai = CrewAI()
 
 
 @app.get("/")
