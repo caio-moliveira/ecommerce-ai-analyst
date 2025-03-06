@@ -18,7 +18,7 @@ DB_PORT = os.getenv("POSTGRES_PORT")
 
 llm = LLM(model="ollama/deepseek-r1:8b", base_url="http://localhost:11434")
 
-db_uri = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+db_uri = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 pgs_search_tool = PGSearchTool(db_uri=db_uri, table_name="public.sales")
 
@@ -74,6 +74,24 @@ class CrewAI:
         """Task to generate a structured business report."""
         return Task(
             config=self.tasks_config["generate_report"],
+        )
+
+    def crew1(self) -> Crew:
+        """Creates the CrewaiFinAgent crew"""
+        return Crew(
+            agents=[self.data_assistant()],
+            tasks=[self.sales_data()],
+            process=Process.sequential,
+            verbose=True,
+        )
+
+    def crew2(self) -> Crew:
+        """Creates the CrewaiFinAgent crew"""
+        return Crew(
+            agents=[self.bi_analyst()],
+            tasks=[self.generate_insights(), self.generate_report()],
+            process=Process.sequential,
+            verbose=True,
         )
 
     def run_data_assistant(self, question: str):

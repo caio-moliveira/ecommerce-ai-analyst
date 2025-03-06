@@ -12,7 +12,7 @@ DELIVERY_STATUSES = ("Pending", "Shipped", "Delivered", "Cancelled")
 
 
 class SalesData(Base):
-    __tablename__ = "sales"
+    __tablename__ = "public.sales"
 
     sale_id = Column(
         String, primary_key=True, default=lambda: str(uuid.uuid4()), nullable=False
