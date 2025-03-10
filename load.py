@@ -27,7 +27,7 @@ Session = sessionmaker(bind=engine)
 
 # Define the SalesData table based on SalesRecord fields
 class Sales(Base):
-    __tablename__ = "sales"
+    __tablename__ = "my_sales"
 
     sale_date = Column(Date, nullable=False)
     sale_id = Column(String, primary_key=True, nullable=False)
@@ -56,7 +56,7 @@ class Sales(Base):
 
 
 # Function to load all CSV files from the 'data' folder into PostgreSQL
-def load_all_data_from_folder(folder_path="data", table_name="sales"):
+def load_all_data_from_folder(folder_path="data", table_name="my_sales"):
     """Load all CSV files in the specified folder into the PostgreSQL database table."""
     try:
         if not os.path.exists(folder_path):
@@ -78,11 +78,11 @@ def load_all_data_from_folder(folder_path="data", table_name="sales"):
 
 
 # Function to load a single CSV file into PostgreSQL
-def load_data_to_postgres(file_path, table_name="sales"):
+def load_data_to_postgres(file_path, table_name="my_sales"):
     """Load new data from a CSV file to a PostgreSQL database table, avoiding duplicates via unique constraint."""
     try:
         # Load CSV into a DataFrame
-        df = pd.read_csv(file_path, encoding="utf-8")
+        df = pd.read_csv(file_path)
 
         # Insert new data into the PostgreSQL table, handling duplicates with the unique constraint
         with engine.connect() as connection:

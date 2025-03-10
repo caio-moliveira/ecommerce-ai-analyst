@@ -1,0 +1,16 @@
+# Ignore system and temporary files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+
+# Ignore build and cache directories
+.vscode/
+.idea/
+*.log
+.git/
+.gitignore
+node_modules/
+venv/
+

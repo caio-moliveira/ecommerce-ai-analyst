@@ -1,29 +1,35 @@
 from crewai import Agent, Task, Crew, Process, LLM
-from crewai.project import agent, task, CrewBase, crew
+from crewai.project import agent, task, CrewBase
 import logging
-from crewai_tools import PGSearchTool, NL2SQLTool
+from langchain_community.utilities.sql_database import SQLDatabase
+from langchain_community.tools.sql_database.tool import QuerySQLDataBaseTool
 import os
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
 
-# Obter as variáveis do arquivo .env
-DB_HOST = os.getenv("POSTGRES_HOST")
+# Load environment variables
 DB_NAME = os.getenv("POSTGRES_DB")
+DB_HOST = os.getenv("POSTGRES_HOST")
 DB_USER = os.getenv("POSTGRES_USER")
 DB_PASS = os.getenv("POSTGRES_PASSWORD")
-DB_PORT = os.getenv("POSTGRES_PORT")
+DB_PORT = os.getenv("POSTGRES_PORT", "5432")
+OLLAMA_URL = os.getenv("OLLAMA_API_URL", "http://ollama:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
 
+# Initialize LLM
+llm = LLM(model=OLLAMA_MODEL, base_url=OLLAMA_URL)
 
-llm = LLM(model="ollama/deepseek-r1:8b", base_url="http://localhost:11434")
+# Correct database connection
+db_uri = f"postgresql://{DB_USER}:{DB_PASS}@postgresql:{DB_PORT}/{DB_NAME}"
 
-db_uri = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# Initialize SQLDatabase (For executing queries)
+sql_database = SQLDatabase.from_uri(db_uri)
 
-pgs_search_tool = PGSearchTool(db_uri=db_uri, table_name="public.sales")
-
-nl2sql = NL2SQLTool(db_uri=db_uri)
-
+# Initialize Query Tool (For executing SQL queries)
+query_tool = QuerySQLDataBaseTool(db=sql_database)
 
 logger = logging.getLogger(__name__)
 
@@ -41,17 +47,7 @@ class CrewAI:
         return Agent(
             llm=llm,
             config=self.agents_config["data_assistant"],
-            tools=[pgs_search_tool, nl2sql],
-            verbose=True,
-        )
-
-    @agent
-    def bi_analyst(self) -> Agent:
-        """Business Intelligence Analyst Agent."""
-        return Agent(
-            llm=llm,
-            config=self.agents_config["bi_analyst"],
-            tools=[pgs_search_tool, nl2sql],
+            tools=[query_tool],
             verbose=True,
         )
 
@@ -62,20 +58,6 @@ class CrewAI:
             config=self.tasks_config["sales_data"],
         )
 
-    @task
-    def generate_insights(self) -> Task:
-        """Task to analyze business insights."""
-        return Task(
-            config=self.tasks_config["generate_insights"],
-        )
-
-    @task
-    def generate_report(self) -> Task:
-        """Task to generate a structured business report."""
-        return Task(
-            config=self.tasks_config["generate_report"],
-        )
-
     def crew1(self) -> Crew:
         """Creates the CrewaiFinAgent crew"""
         return Crew(
@@ -84,37 +66,3 @@ class CrewAI:
             process=Process.sequential,
             verbose=True,
         )
-
-    def crew2(self) -> Crew:
-        """Creates the CrewaiFinAgent crew"""
-        return Crew(
-            agents=[self.bi_analyst()],
-            tasks=[self.generate_insights(), self.generate_report()],
-            process=Process.sequential,
-            verbose=True,
-        )
-
-    def run_data_assistant(self, question: str):
-        """Executes only the data assistant agent."""
-        try:
-            logger.info(f"🟢 Running Data Assistant for question: {question}")
-            crew = Crew(agents=[self.data_assistant()], tasks=[self.sales_data()])
-            result = crew.kickoff({"question": question})
-            return result
-        except Exception as e:
-            logger.error(f"❌ Data Assistant Execution Failed: {e}", exc_info=True)
-            return {"error": str(e)}
-
-    def run_bi_analyst(self, period: str):
-        """Executes only the BI Analyst agent for insights & reports."""
-        try:
-            logger.info(f"🟢 Running BI Analyst for period: {period}")
-            crew = Crew(
-                agents=[self.bi_analyst()],
-                tasks=[self.generate_insights(), self.generate_report()],
-            )
-            result = crew.kickoff({"period": period})
-            return result
-        except Exception as e:
-            logger.error(f"❌ BI Analyst Execution Failed: {e}", exc_info=True)
-            return {"error": str(e)}

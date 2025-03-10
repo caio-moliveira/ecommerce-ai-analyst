@@ -1,45 +1,13 @@
 sales_data:
-  description: >
-    Retrieve and analyze sales data to answer the user's question: {question}.  
-    You must generate an optimized SQL query to extract the necessary information from the database based on the question: {question}.  
-    Execute the query and provide a structured response.
+  description: > 
+    Generate an optimized SQL query to extract relevant data from the table `public.my_sales` based on the question: {question}.  
+    Execute the query and return:
+      1. The SQL query used to generate the response.
+      2. The structured query results.
+
   expected_output: >
-    Provide the executed SQL query and the retrieved results in a structured format based on the question: {question}
+    - The exact SQL query used to answer {question}.
+    - The structured results retrieved from executing the query.
+
   agent: data_assistant
-
-generate_insights:
-  description: >
-    Conduct an advanced data analysis to uncover key business insights for the company at the period: {period}.  
-    Your analysis is not based on a specific question, but rather focuses on identifying trends, risks, and opportunities  
-    within the dataset .
-    Perform an advanced analysis of sales performance based on the retrieved data at the period: {period}.
-  expected_output: >
-    Focus on key business indicators that help stakeholders identify trends, risks, and opportunities based on the period: {period}
-
-    Period for analysis: {period}
-      - Total revenue, both overall and by region
-      - Gross profit margin
-      - Customer retention trends
-      - Average order value
-      - Best-selling products and their contribution to revenue
-      - Underperforming products with low sales volume
-      - Monthly and seasonal sales trends
-      - Sales performance across different channels
-      - Regional differences in sales performance
-      - Customer behavior, including high-value customers and potential churn risks
-
-  expected_output: >
-    Provide a structured, breakdown of insights, text-based summary of key sales insights at the period: {period}
-  agent: bi_analyst
-
-generate_report:
-  description: >
-    Create a well-structured and executive-friendly business intelligence report at the period: {period}.  
-    This report summarizes the key trends, risks, and opportunities identified in the dataset at the period: {period}.  
-    The insights should be presented in a clear and actionable format.
-    The report should be easy to understand and focus on essential takeaways.
-  expected_output: >
-    Write a well-structured business report summarizing the key findings and insights from the analysis at the period: {period}  
-  agent: bi_analyst
-
 

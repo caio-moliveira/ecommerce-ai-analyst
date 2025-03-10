@@ -1,22 +1,14 @@
 from fastapi import APIRouter
-from backend.api.services import process_user_question, generate_report
+from api.services import process_user_question
+from api.schemas import QuestionRequest
 
-router = APIRouter()
+router = APIRouter(prefix="/ai", tags=["AI"])
 
 
-@router.post("/ai/ask")
-def ask_question(question: str):
+@router.post("/ask")
+async def ask_question(request: QuestionRequest):
     """
-    API endpoint to receive user questions and trigger AI execution.
+    Handles user questions and returns AI-generated responses.
     """
-    response = process_user_question(question)
-    return response
-
-
-@router.post("/ai/report")
-def generate_ai_report(period: str):
-    """
-    API endpoint to trigger AI report generation separately.
-    """
-    response = generate_report(period)
-    return response
+    response = process_user_question(request.question)
+    return {"answer": response}

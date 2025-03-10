@@ -1,61 +1,61 @@
 services:
-  db:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      postgresql: 
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    env_file:
+      - ./backend/.env 
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    networks:
+      - tutorial-net
+
+      
+  postgresql:
     image: postgres:latest
     restart: always
     env_file:
-      - .env
+      - .env 
     environment:
-      POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
-      - pg_data:/var/lib/postgresql/data
-
-  backend:
-    build: 
-      context: .
-      dockerfile: backend/Dockerfile
-    depends_on:
-      - db
-      - ollama
-    env_file:
-      - .env
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      OLLAMA_API_URL: http://ollama:11434
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - ./ai_agents:/app/ai_agents 
-    command: ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-    
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    depends_on:
-      - backend
-    ports:
-      - "8501:8501"
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
   ollama:
-    image: ollama/ollama:latest
-    restart: always
+    build: 
+      context: ./ollama
+      dockerfile: Dockerfile
     ports:
       - "11434:11434"
     volumes:
-      - ollama_models:/root/.ollama/models
-    environment:
-      - OLLAMA_HOST=http://0.0.0.0:11434
-      - OLLAMA_MODELS=/root/.ollama/models
+      - /ollama
+    networks:
+      - tutorial-net
+    entrypoint: ["/bin/bash", "/pull-llama3.sh"]
+
 
 volumes:
-  pg_data:
-  ollama_models:
+  pgdata:
+
+networks:
+  tutorial-net:
+      
+
+

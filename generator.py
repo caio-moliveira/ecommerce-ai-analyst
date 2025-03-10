@@ -46,8 +46,8 @@ sales_regions = ["New York", "California", "Texas", "Florida", "Illinois"]
 sales_reps = [fake.name() for _ in range(30)]
 
 # Default start date and number of days to generate data
-START_DATE = datetime(2025, 1, 1)
-NUM_DAYS = 30  # Number of days to generate data for
+START_DATE = datetime(2024, 12, 31)
+NUM_DAYS = 1  # Number of days to generate data for
 
 
 def generate_random_record(sale_date):
@@ -118,7 +118,7 @@ def generate_sales_data(num_days=NUM_DAYS):
     current_date = START_DATE
 
     for _ in range(num_days):
-        num_rows = np.random.randint(50, 100)
+        num_rows = np.random.randint(10, 25)
         sales_data = [generate_random_record(current_date) for _ in range(num_rows)]
         df_sales = pd.DataFrame(sales_data)
 

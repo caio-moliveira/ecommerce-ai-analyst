@@ -1,11 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
-from backend.api.routes import router as router
+from api.routes import router
 
-# Initialize FastAPI
 app = FastAPI(title="AI-Powered Sales Analytics API", version="1.0")
 
-# Register API routes
 app.include_router(router)
 
 
@@ -16,4 +14,4 @@ async def root():
 
 
 if __name__ == "__main__":
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
