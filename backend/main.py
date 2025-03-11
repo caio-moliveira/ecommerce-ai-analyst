@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-from api.routes import router
+from backend.api.routes import router
 
 app = FastAPI(title="AI-Powered Sales Analytics API", version="1.0")
 

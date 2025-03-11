@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from api.services import process_user_question
-from api.schemas import QuestionRequest
+from backend.api.services import process_user_question
+from backend.api.schemas import QuestionRequest
 
-router = APIRouter(prefix="/ai", tags=["AI"])
+router = APIRouter()
 
 
 @router.post("/ask")
