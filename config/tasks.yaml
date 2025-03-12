@@ -1,0 +1,11 @@
+research_task:
+  description: >
+    Realizar pesquisas completas para encontrar candidatos em potencial para o cargo especificado.
+    Utilize vários recursos e bancos de dados online para reunir uma lista abrangente de candidatos em potencial.
+    Garanta que o candidato atenda os requisitos da vaga. Requisitos da vaga: {req.job_requirements}
+
+  expected_output: >
+    Uma lista com top 5 candidatos potenciais separada por Bullet points, 
+    cada candidado deve conter informações de contato e breve descrição do perfil destacando a sua qualificação para a vaga 
+    trazer junto a url para encontrar o perfil do candidato
+  agent: data_assistant
