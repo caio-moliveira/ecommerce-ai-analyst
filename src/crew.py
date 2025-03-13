@@ -12,7 +12,7 @@ class CrewAI:
     llm = ChatGroq(
         temperature=0,
         model="groq/mixtral-8x7b-32768",
-        groq_api_key="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",
+        groq_api_key="",
     )
 
     @agent
