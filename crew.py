@@ -8,15 +8,17 @@ from crewai_tools import SerperDevTool
 app = FastAPI()
 
 # Carregar as chaves da API
-os.environ["OPENAI_API_KEY"] = "OPENAI_API_KEY"
 
-
-llm = LLM(model="bedrock/anthropic.claude-3-sonnet-20240229-v1:0")
+SERPER_API_KEY = os.getenv("SERPER_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 # Definir o modelo de entrada
 class JobRequirements(BaseModel):
     job_requirements: str
+
+
+llm = LLM(model="bedrock/anthropic.claude-3-sonnet-20240229-v1:0")
 
 
 @CrewBase
@@ -55,7 +57,8 @@ class CrewAI:
 # Definir a rota para executar a tarefa
 @app.post("/research_candidates")
 async def research_candidates(req: JobRequirements):
-    result = crew.kickoff(inputs={"job_requirements": req.job_requirements})
+    crew_ai = CrewAI()
+    result = crew_ai.crew().kickoff(inputs={"job_requirements": req.job_requirements})
     return {"result": result}
 
 
